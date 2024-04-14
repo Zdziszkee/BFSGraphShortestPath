@@ -8,7 +8,6 @@
 #include <optional>
 #include <queue>
 #include <set>
-#include <stack>
 #include <unordered_map>
 
 template <class T>
@@ -56,7 +55,6 @@ public:
 
     void add_vertex_neighbour(Vertex& vertex, Vertex& neighbour)
     {
-
         for (int i = 0; i < current_size; ++i)
         {
             if (vertex.value == vertex_adjacency_list[i].value)
@@ -108,20 +106,12 @@ public:
     std::optional<Vertex&> get_vertice_by_value(T& value)
     {
         std::optional<Vertex&> result;
-        std::stack<Vertex&> vertices;
-        vertices.push(this->root);
-
-        while (!vertices.empty())
+        for (int i = 0; i < current_size; ++i)
         {
-            const auto& vertex = vertices.top();
-            if (value == vertex.value)
+            if (vertex_adjacency_list[i].value == value)
             {
-                result = vertex;
+                result = vertex_adjacency_list[i];
                 return result;
-            }
-            for (const auto& neighbour : vertex.neighbours)
-            {
-                vertices.push(neighbour);
             }
         }
         return std::nullopt;
