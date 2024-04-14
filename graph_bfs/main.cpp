@@ -7,15 +7,15 @@
 
 int main()
 {
-    size_t vertice_amount;
-    std::cin >> vertice_amount;
+    size_t vertex_amount;
+    std::cin >> vertex_amount;
 
     std::vector<std::string> vertices;
-    std::string vertice;
-    for (int i = 0; i < vertice_amount; ++i)
+    std::string vertex;
+    for (int i = 0; i < vertex_amount; ++i)
     {
-        std::cin >> vertice;
-        vertices.push_back(vertice);
+        std::cin >> vertex;
+        vertices.push_back(vertex);
     }
 
     size_t path_amount;

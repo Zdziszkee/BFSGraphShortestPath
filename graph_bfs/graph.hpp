@@ -11,70 +11,116 @@
 #include <stack>
 #include <unordered_map>
 
-template<class T>
-class Graph {
+template <class T>
+class Graph
+{
 public:
-    class Vertice {
-    public:
+    class Vertex
+    {
         T value;
-        std::list<Vertice> neighbours;
+        std::list<Vertex> neighbours;
 
     public:
-        Vertice(const T value, const std::list<Vertice> &neighbours)
-            : value(value),
-              neighbours(neighbours) {
+        explicit Vertex(const T value)
+            : value(value)
+        {
+        }
+
+        void add_neighbour(Vertex vertex)
+        {
+            neighbours.emplace(vertex);
         }
     };
 
 private:
-    //TODO change to neighbour list
-    Vertice root;
+    //adj list
+    const size_t size;
+    size_t current_size = 0;
+    Vertex* vertex_adjacency_list;
 
-
+public:
+    explicit Graph(const size_t size)
+        : size(size), vertex_adjacency_list(new Vertex[size])
+    {
     }
 
-    void search_and_show_path(Vertice &start, Vertice &end) {
-        std::queue<Vertice &> vertices;
+    void add_vertex(Vertex vertex)
+    {
+        if (current_size >= size)
+        {
+            throw std::overflow_error("Graph has reached maximum amount of vertices");
+        }
+        vertex_adjacency_list[current_size] = vertex;
+        current_size++;
+    }
+
+    void add_vertex_neighbour(Vertex& vertex, Vertex& neighbour)
+    {
+
+        for (int i = 0; i < current_size; ++i)
+        {
+            if (vertex.value == vertex_adjacency_list[i].value)
+            {
+                vertex_adjacency_list[i].add_neighbour(neighbour);
+            }
+        }
+        throw std::runtime_error("Could not find vertex with that value.");
+    }
+
+    std::list<Vertex&> search_and_show_path(Vertex& start, Vertex& end)
+    {
+        std::queue<Vertex&> vertices;
         vertices.push(start);
         //vertice parent
-        std::unordered_map<Vertice &, Vertice &> parents;
-        //visited vertices and their distance from a
-        std::unordered_map<Vertice &, size_t> visited;
+        std::unordered_map<Vertex&, Vertex&> parents;
+        //visited vertices and their distance from start
+        std::unordered_map<Vertex&, size_t> visited;
         visited[start] = 0;
 
-        while (!vertices.empty()) {
-            Vertice& vertex = vertices.front();
+        while (!vertices.empty())
+        {
+            Vertex& vertex = vertices.front();
             vertices.pop();
-            for (auto &neighbour: vertex.neighbours) {
-                if (!visited.contains(neighbour)) {
+            for (auto& neighbour : vertex.neighbours)
+            {
+                if (!visited.contains(neighbour))
+                {
                     vertices.push(neighbour);
                     visited[neighbour] = visited[vertex] + 1;
                     parents[neighbour] = vertex;
                 }
-                if (neighbour == end) {
-                    //TODO back track and return list
-                    break;
+                if (neighbour == end)
+                {
+                    std::list<Vertex&> shortest_path;
+                    Vertex& current = neighbour;
+                    while (parents.contains(current))
+                    {
+                        shortest_path.push_front(current);
+                        current = parents[current];
+                    }
+                    return shortest_path;
                 }
             }
         }
-    //TODO return empty list
-        // show path from t to s
-        for (; end != -1; end = parents[end])
-            std::cout << end + 1 << " ";
+        return new std::list<Vertex&>;
     }
 
-    std::optional<Vertice &> get_vertice_by_value(T &value) {
-        std::optional<Vertice &> result;
-        std::stack<Vertice &> vertices;
+    std::optional<Vertex&> get_vertice_by_value(T& value)
+    {
+        std::optional<Vertex&> result;
+        std::stack<Vertex&> vertices;
         vertices.push(this->root);
 
-        while (!vertices.empty()) {
-            const auto &vertex = vertices.top();
-            if (value == vertex.value) {
+        while (!vertices.empty())
+        {
+            const auto& vertex = vertices.top();
+            if (value == vertex.value)
+            {
                 result = vertex;
                 return result;
             }
-            for (const auto &neighbour: vertex.neighbours) {
+            for (const auto& neighbour : vertex.neighbours)
+            {
                 vertices.push(neighbour);
             }
         }
