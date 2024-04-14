@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "graph.hpp"
+
 int main()
 {
     size_t vertex_amount;
@@ -22,8 +24,8 @@ int main()
     std::cin >> path_amount;
 
     std::string path_name;
-    std::list<std::string> path;
-    std::unordered_map<std::string, std::list<std::string>> paths;
+    std::vector<std::string> path;
+    std::unordered_map<std::string, std::vector<std::string>> paths;
     std::string path_vertice;
     for (int i = 0; i < path_amount; ++i)
     {
@@ -45,5 +47,30 @@ int main()
     std::string end_vertice;
     std::cin >> start_vertice;
     std::cin >> end_vertice;
+
+    Graph<std::string> graph(vertex_amount);
+
+    for (const auto& value : vertices)
+    {
+        auto vertex_node = Graph<std::string>::Vertex(value);
+        graph.add_vertex(vertex_node);
+    }
+    for (const auto& pair : paths)
+    {
+        const auto list = pair.second;
+        for (int i = 0; i < list.size() - 1; ++i)
+        {
+            const auto& current = list[i];
+            const auto& next = list[i + 1];
+            graph.add_vertex_neighbour(graph.get_vertice_by_value(current).value(),
+                                       graph.get_vertice_by_value(next).value());
+        }
+    }
+    const auto shortest_path = graph.search_and_show_path(graph.get_vertice_by_value(start_vertice).value(),
+                                                           graph.get_vertice_by_value(end_vertice).value());
+    for (const auto& node : shortest_path)
+    {
+        std::cout<<node.value<<" ";
+    }
     return 0;
 }

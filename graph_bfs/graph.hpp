@@ -7,7 +7,6 @@
 #include <list>
 #include <optional>
 #include <queue>
-#include <set>
 #include <unordered_map>
 
 template <class T>
@@ -16,18 +15,20 @@ class Graph
 public:
     class Vertex
     {
-        T value;
-        std::list<Vertex> neighbours;
-
     public:
-        explicit Vertex(const T value)
+        T value;
+        std::vector<Vertex> neighbours;
+
+        Vertex() = default;
+
+        explicit Vertex( T value)
             : value(value)
         {
         }
 
         void add_neighbour(Vertex vertex)
         {
-            neighbours.emplace(vertex);
+            neighbours.push_back(vertex);
         }
     };
 
@@ -53,7 +54,7 @@ public:
         current_size++;
     }
 
-    void add_vertex_neighbour(Vertex& vertex, Vertex& neighbour)
+    void add_vertex_neighbour(Vertex vertex, Vertex neighbour)
     {
         for (int i = 0; i < current_size; ++i)
         {
@@ -65,21 +66,21 @@ public:
         throw std::runtime_error("Could not find vertex with that value.");
     }
 
-    std::list<Vertex&> search_and_show_path(Vertex& start, Vertex& end)
+    std::vector<Vertex> search_and_show_path(Vertex start, Vertex end)
     {
         std::queue<Vertex&> vertices;
         vertices.push(start);
         //vertice parent
-        std::unordered_map<Vertex&, Vertex&> parents;
+        std::unordered_map<Vertex, Vertex> parents;
         //visited vertices and their distance from start
-        std::unordered_map<Vertex&, size_t> visited;
+        std::unordered_map<Vertex, size_t> visited;
         visited[start] = 0;
 
         while (!vertices.empty())
         {
-            Vertex& vertex = vertices.front();
+            Vertex vertex = vertices.front();
             vertices.pop();
-            for (auto& neighbour : vertex.neighbours)
+            for (auto neighbour : vertex.neighbours)
             {
                 if (!visited.contains(neighbour))
                 {
@@ -89,8 +90,8 @@ public:
                 }
                 if (neighbour == end)
                 {
-                    std::list<Vertex&> shortest_path;
-                    Vertex& current = neighbour;
+                    std::vector<Vertex> shortest_path;
+                    Vertex current = neighbour;
                     while (parents.contains(current))
                     {
                         shortest_path.push_front(current);
@@ -100,12 +101,12 @@ public:
                 }
             }
         }
-        return new std::list<Vertex&>;
+        return new std::list<Vertex>;
     }
 
-    std::optional<Vertex&> get_vertice_by_value(T& value)
+    std::optional<Vertex> get_vertice_by_value(T value)
     {
-        std::optional<Vertex&> result;
+        std::optional<Vertex> result;
         for (int i = 0; i < current_size; ++i)
         {
             if (vertex_adjacency_list[i].value == value)
