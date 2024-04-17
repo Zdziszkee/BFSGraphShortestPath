@@ -19,6 +19,7 @@ TEST(GraphShortestPathTest, ExampleGraph1)
     std::list<std::string> expected = {"Quackville", "NoodlePark", "Sneezewind", "FluffyFalls"};
     EXPECT_EQ(path, expected);
 }
+
 TEST(GraphShortestPathTest, ExampleGraph2)
 {
     // 12/2/2020 -> 737761
