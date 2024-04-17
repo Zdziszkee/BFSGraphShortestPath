@@ -7,7 +7,7 @@
 #include <list>
 #include <queue>
 #include <unordered_map>
-
+#include <sstream>
 class Graph
 {
     size_t current_size = 0;
@@ -36,7 +36,7 @@ public:
         vertex_adjacency_list[vertex].push_back(neighbour);
     }
 
-    std::list<std::string> search_and_show_path(const std::string& start, const std::string& end)
+    std::list<std::string> get_shortest_path(const std::string& start, const std::string& end)
     {
         std::queue<std::string> vertices;
         vertices.push(start);
@@ -73,6 +73,62 @@ public:
             }
         }
         return {};
+    }
+
+    static Graph get_graph_from_stream(std::istream& stream)
+    {
+        size_t vertex_amount;
+        stream >> vertex_amount;
+
+        std::vector<std::string> vertices;
+        std::string vertex;
+        for (int i = 0; i < vertex_amount; ++i)
+        {
+            stream >> vertex;
+            vertices.push_back(vertex);
+        }
+
+        size_t path_amount;
+        stream >> path_amount;
+
+        std::string path_name;
+        std::vector<std::string> path;
+        std::unordered_map<std::string, std::vector<std::string>> paths;
+        std::string path_vertice;
+        stream.ignore();
+        for (int i = 0; i < path_amount; ++i)
+        {
+            std::string line;
+            // Read words until '\n' appears
+            std::getline(stream, line);
+            std::istringstream string_stream(line);
+            string_stream >> path_name;
+            while (string_stream >> path_vertice)
+            {
+                path.push_back(path_vertice);
+            }
+            paths[path_name] = path;
+            path.clear();
+        }
+
+
+        Graph graph;
+
+        for (const auto& value : vertices)
+        {
+            graph.add_vertex(value);
+        }
+        for (const auto& pair : paths)
+        {
+            const auto list = pair.second;
+            for (int i = 0; i < list.size() - 1; ++i)
+            {
+                const auto& current = list[i];
+                const auto& next = list[i + 1];
+                graph.add_vertex_neighbour(current, next);
+            }
+        }
+        return graph;
     }
 };
 #endif //GRAPH_HPP

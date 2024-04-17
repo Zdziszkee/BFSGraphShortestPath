@@ -109,7 +109,7 @@ TEST(FactorialTest, Positive) {
 
 // Tests IsPrime()
 
-// Tests negative input.
+// Tests negative test_input_1.
 TEST(IsPrimeTest, Negative) {
   // This test belongs to the IsPrimeTest test case.
 
@@ -126,7 +126,7 @@ TEST(IsPrimeTest, Trivial) {
   EXPECT_TRUE(IsPrime(3));
 }
 
-// Tests positive input.
+// Tests positive test_input_1.
 TEST(IsPrimeTest, Positive) {
   EXPECT_FALSE(IsPrime(4));
   EXPECT_TRUE(IsPrime(5));
