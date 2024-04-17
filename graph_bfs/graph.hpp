@@ -5,82 +5,52 @@
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
 #include <list>
-#include <optional>
 #include <queue>
 #include <unordered_map>
 
-template <class T>
 class Graph
 {
-public:
-    class Vertex
-    {
-    public:
-        T value;
-        std::vector<Vertex> neighbours;
-
-        Vertex() = default;
-
-        explicit Vertex( T value)
-            : value(value)
-        {
-        }
-
-        void add_neighbour(Vertex vertex)
-        {
-            neighbours.push_back(vertex);
-        }
-    };
-
-private:
-    //adj list
-    const size_t size;
     size_t current_size = 0;
-    Vertex* vertex_adjacency_list;
+    std::unordered_map<std::string, std::list<std::string>> vertex_adjacency_list;
 
 public:
-    explicit Graph(const size_t size)
-        : size(size), vertex_adjacency_list(new Vertex[size])
-    {
-    }
+    Graph() = default;
 
-    void add_vertex(Vertex vertex)
+    void add_vertex(const std::string& vertex)
     {
-        if (current_size >= size)
+        if (vertex_adjacency_list.contains(vertex))
         {
-            throw std::overflow_error("Graph has reached maximum amount of vertices");
+            throw std::runtime_error("This vertex already exists in this graph.");
         }
-        vertex_adjacency_list[current_size] = vertex;
+
+        vertex_adjacency_list[vertex] = std::list<std::string>();
         current_size++;
     }
 
-    void add_vertex_neighbour(Vertex vertex, Vertex neighbour)
+    void add_vertex_neighbour(const std::string& vertex, const std::string& neighbour)
     {
-        for (int i = 0; i < current_size; ++i)
+        if (!vertex_adjacency_list.contains(vertex))
         {
-            if (vertex.value == vertex_adjacency_list[i].value)
-            {
-                vertex_adjacency_list[i].add_neighbour(neighbour);
-            }
+            throw std::runtime_error("This vertex is not present in graph.");
         }
-        throw std::runtime_error("Could not find vertex with that value.");
+        vertex_adjacency_list[vertex].push_back(neighbour);
     }
 
-    std::vector<Vertex> search_and_show_path(Vertex start, Vertex end)
+    std::list<std::string> search_and_show_path(const std::string& start, const std::string& end)
     {
-        std::queue<Vertex&> vertices;
+        std::queue<std::string> vertices;
         vertices.push(start);
-        //vertice parent
-        std::unordered_map<Vertex, Vertex> parents;
+        //vertex parent
+        std::unordered_map<std::string, std::string> parents;
         //visited vertices and their distance from start
-        std::unordered_map<Vertex, size_t> visited;
+        std::unordered_map<std::string, size_t> visited;
         visited[start] = 0;
 
         while (!vertices.empty())
         {
-            Vertex vertex = vertices.front();
+            std::string vertex = vertices.front();
             vertices.pop();
-            for (auto neighbour : vertex.neighbours)
+            for (const auto& neighbour : vertex_adjacency_list[vertex])
             {
                 if (!visited.contains(neighbour))
                 {
@@ -90,32 +60,19 @@ public:
                 }
                 if (neighbour == end)
                 {
-                    std::vector<Vertex> shortest_path;
-                    Vertex current = neighbour;
+                    std::list<std::string> shortest_path;
+                    std::string current = neighbour;
                     while (parents.contains(current))
                     {
                         shortest_path.push_front(current);
                         current = parents[current];
                     }
+                    shortest_path.push_front(start);
                     return shortest_path;
                 }
             }
         }
-        return new std::list<Vertex>;
-    }
-
-    std::optional<Vertex> get_vertice_by_value(T value)
-    {
-        std::optional<Vertex> result;
-        for (int i = 0; i < current_size; ++i)
-        {
-            if (vertex_adjacency_list[i].value == value)
-            {
-                result = vertex_adjacency_list[i];
-                return result;
-            }
-        }
-        return std::nullopt;
+        return {};
     }
 };
 #endif //GRAPH_HPP

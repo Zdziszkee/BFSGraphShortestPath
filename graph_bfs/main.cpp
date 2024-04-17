@@ -27,6 +27,7 @@ int main()
     std::vector<std::string> path;
     std::unordered_map<std::string, std::vector<std::string>> paths;
     std::string path_vertice;
+    std::cin.ignore();
     for (int i = 0; i < path_amount; ++i)
     {
         std::string line;
@@ -36,7 +37,6 @@ int main()
         string_stream >> path_name;
         while (string_stream >> path_vertice)
         {
-            string_stream >> path_vertice;
             path.push_back(path_vertice);
         }
         paths[path_name] = path;
@@ -48,12 +48,11 @@ int main()
     std::cin >> start_vertice;
     std::cin >> end_vertice;
 
-    Graph<std::string> graph(vertex_amount);
+    Graph graph;
 
     for (const auto& value : vertices)
     {
-        auto vertex_node = Graph<std::string>::Vertex(value);
-        graph.add_vertex(vertex_node);
+        graph.add_vertex(value);
     }
     for (const auto& pair : paths)
     {
@@ -62,15 +61,13 @@ int main()
         {
             const auto& current = list[i];
             const auto& next = list[i + 1];
-            graph.add_vertex_neighbour(graph.get_vertice_by_value(current).value(),
-                                       graph.get_vertice_by_value(next).value());
+            graph.add_vertex_neighbour(current, next);
         }
     }
-    const auto shortest_path = graph.search_and_show_path(graph.get_vertice_by_value(start_vertice).value(),
-                                                           graph.get_vertice_by_value(end_vertice).value());
+    const auto shortest_path = graph.search_and_show_path(start_vertice, end_vertice);
     for (const auto& node : shortest_path)
     {
-        std::cout<<node.value<<" ";
+        std::cout << node << " ";
     }
     return 0;
 }
