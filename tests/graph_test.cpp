@@ -1,7 +1,7 @@
 //
 // Created by Kacper Kuchta on 4/13/24.
 //
-#include "../graph_bfs/graph.hpp"
+#include "../graph_bfs_shortest_path/graph.hpp"
 #include <fstream>
 #include "gtest/gtest.h"
 TEST(GraphShortestPathTest, ExampleGraph1)
